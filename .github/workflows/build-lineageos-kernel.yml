@@ -42,7 +42,7 @@ jobs:
       - name: Configure kernel (kiev_defconfig)
         run: |
           cd kernel
-          make ARCH=arm64 LLVM=1 kiev_defconfig
+          make ARCH=arm64 LLVM=1 vendor/kiev_defconfig
 
       - name: Build DTB
         run: |
@@ -57,7 +57,7 @@ jobs:
       - name: Verify outputs
         run: |
           ls -la kernel/arch/arm64/boot/Image.gz
-          ls -la kernel/arch/arm64/boot/dts/qcom/sm7250-motorola-kiev.dtb
+          find kernel/arch/arm64/boot/dts -name "*kiev*" -type f
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
