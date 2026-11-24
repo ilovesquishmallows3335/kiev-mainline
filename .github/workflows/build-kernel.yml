@@ -23,8 +23,6 @@ jobs:
     steps:
       - name: Checkout kiev-mainline
         uses: actions/checkout@v4
-        with:
-          path: kiev-mainline
 
       - name: Install dependencies
         run: |
@@ -53,8 +51,8 @@ jobs:
 
       - name: Copy config and device tree
         run: |
-          cp kiev-mainline/config/kiev_defconfig linux-mainline/arch/arm64/configs/
-          cp kiev-mainline/dts/sm7225-motorola-kiev.dts linux-mainline/arch/arm64/boot/dts/qcom/
+          cp config/kiev_defconfig linux-mainline/arch/arm64/configs/
+          cp dts/sm7225-motorola-kiev.dts linux-mainline/arch/arm64/boot/dts/qcom/
           echo 'dtb-$(CONFIG_ARCH_QCOM)	+= sm7225-motorola-kiev.dtb' >> linux-mainline/arch/arm64/boot/dts/qcom/Makefile
 
       - name: Configure kernel
