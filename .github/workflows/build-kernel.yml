@@ -63,8 +63,7 @@ jobs:
       - name: Build DTB
         run: |
           cd linux-mainline
-          make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- LLVM=1 DTC_FLAGS="-@" \
-            arch/arm64/boot/dts/qcom/sm7225-motorola-kiev.dtb
+          make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- LLVM=1 DTC_FLAGS="-@" dtbs
 
       - name: Build Kernel Image.gz
         run: |
