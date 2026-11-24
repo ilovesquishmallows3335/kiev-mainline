@@ -42,17 +42,17 @@ jobs:
       - name: Configure kernel (kiev_defconfig)
         run: |
           cd kernel
-          make ARCH=arm64 LLVM=1 vendor/kiev_defconfig
+          make ARCH=arm64 LLVM=1 LLVM_IAS=1 vendor/kiev_defconfig
 
       - name: Build DTB
         run: |
           cd kernel
-          make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- LLVM=1 DTC_FLAGS="-@" dtbs
+          make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- LLVM=1 LLVM_IAS=1 DTC_FLAGS="-@" dtbs
 
       - name: Build Kernel Image.gz
         run: |
           cd kernel
-          make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- LLVM=1 DTC_FLAGS="-@" -j$(nproc) Image.gz
+          make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- LLVM=1 LLVM_IAS=1 DTC_FLAGS="-@" -j$(nproc) Image.gz
 
       - name: Verify outputs
         run: |
