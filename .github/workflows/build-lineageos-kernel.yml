@@ -52,12 +52,19 @@ jobs:
       - name: Build Kernel Image.gz
         run: |
           cd kernel
-          make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- LLVM=1 LLVM_IAS=1 DTC_FLAGS="-@" V=1 -j$(nproc) Image.gz 2>&1 | tail -100
+          make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- LLVM=1 LLVM_IAS=1 DTC_FLAGS="-@" -j$(nproc) Image.gz
+
+      - name: Find DTB files
+        run: |
+          cd kernel
+          find arch/arm64/boot/dts -name "*.dtb" -type f | head -30
 
       - name: Verify outputs
         run: |
           ls -la kernel/arch/arm64/boot/Image.gz
-          find kernel/arch/arm64/boot/dts -name "*kiev*" -type f
+          DTB=$(find kernel/arch/arm64/boot/dts -name "*kiev*" -name "*.dtb" -type f | head -1)
+          echo "Found DTB: $DTB"
+          ls -la "$DTB"
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
@@ -65,5 +72,5 @@ jobs:
           name: kiev-lineageos-kernel-${{ github.sha }}
           path: |
             kernel/arch/arm64/boot/Image.gz
-            kernel/arch/arm64/boot/dts/qcom/sm7250-motorola-kiev.dtb
+            kernel/arch/arm64/boot/dts/**/*kiev*.dtb
           retention-days: 30
