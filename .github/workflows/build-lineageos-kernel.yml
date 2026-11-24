@@ -19,6 +19,14 @@ jobs:
           ref: lineage-20
           path: kernel
 
+      - name: Add swap (prevent OOM)
+        run: |
+          sudo fallocate -l 4G /swapfile
+          sudo chmod 600 /swapfile
+          sudo mkswap /swapfile
+          sudo swapon /swapfile
+          free -h
+
       - name: Install dependencies
         run: |
           sudo apt-get update
@@ -49,10 +57,10 @@ jobs:
           cd kernel
           make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- LLVM=1 LLVM_IAS=1 DTC_FLAGS="-@" dtbs
 
-      - name: Build Kernel Image.gz
+      - name: Build Kernel Image.gz (reduced parallelism, lld linker)
         run: |
           cd kernel
-          make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- LLVM=1 LLVM_IAS=1 DTC_FLAGS="-@" -j$(nproc) Image.gz
+          make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- LLVM=1 LLVM_IAS=1 LD=ld.lld -j2 Image.gz
 
       - name: Find DTB files
         run: |
