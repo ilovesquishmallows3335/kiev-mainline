@@ -9,7 +9,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    timeout-minutes: 120
 
     steps:
       - name: Checkout LineageOS kernel (sm7250)
@@ -52,7 +52,7 @@ jobs:
       - name: Build Kernel Image.gz
         run: |
           cd kernel
-          make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- LLVM=1 LLVM_IAS=1 DTC_FLAGS="-@" -j$(nproc) Image.gz
+          make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- LLVM=1 LLVM_IAS=1 DTC_FLAGS="-@" V=1 -j$(nproc) Image.gz 2>&1 | tail -100
 
       - name: Verify outputs
         run: |
