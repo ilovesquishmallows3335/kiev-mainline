@@ -1,0 +1,69 @@
+name: Build LineageOS Kernel for Motorola Kiev (sm7250)
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/build-lineageos-kernel.yml'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+
+    steps:
+      - name: Checkout LineageOS kernel (sm7250)
+        uses: actions/checkout@v4
+        with:
+          repository: LineageOS/android_kernel_motorola_sm7250
+          ref: lineage-20
+          path: kernel
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential \
+            clang \
+            lld \
+            llvm \
+            libssl-dev \
+            bc \
+            cpio \
+            kmod \
+            flex \
+            bison \
+            dwarves \
+            python3 \
+            git \
+            wget \
+            device-tree-compiler
+
+      - name: Configure kernel (kiev_defconfig)
+        run: |
+          cd kernel
+          make ARCH=arm64 LLVM=1 kiev_defconfig
+
+      - name: Build DTB
+        run: |
+          cd kernel
+          make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- LLVM=1 DTC_FLAGS="-@" dtbs
+
+      - name: Build Kernel Image.gz
+        run: |
+          cd kernel
+          make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- LLVM=1 DTC_FLAGS="-@" -j$(nproc) Image.gz
+
+      - name: Verify outputs
+        run: |
+          ls -la kernel/arch/arm64/boot/Image.gz
+          ls -la kernel/arch/arm64/boot/dts/qcom/sm7250-motorola-kiev.dtb
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: kiev-lineageos-kernel-${{ github.sha }}
+          path: |
+            kernel/arch/arm64/boot/Image.gz
+            kernel/arch/arm64/boot/dts/qcom/sm7250-motorola-kiev.dtb
+          retention-days: 30
